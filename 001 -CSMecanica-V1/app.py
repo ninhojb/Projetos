@@ -38,6 +38,7 @@ class Aplicativo:
         self.logoPrincipal.set_from_file(self.imgLogo)
         self.logoPrincipal.show()
         self.fixo_home.set_visible(True)
+        self.vistaHome = False
 
         #atribui os botoes de insercao de dados
         self.botaoSalvar = self.builder.get_object('btn_salvar')
@@ -73,10 +74,10 @@ class Aplicativo:
         self.treeview = self.builder.get_object('treview_cliente')
         self.treeviewCarros = self.builder.get_object('treeview_carros')
 
+    #Botes do lado esquerdo
     #Botao home
     def botaoHome(self, widget):
-        if not self.visitadoCliente:
-            self.visitadoCliente = False
+        if not self.vistaHome:
             self.imgLogo = 'img/logo.jpg'
             self.logoPrincipal.set_from_file(self.imgLogo)
             self.logoPrincipal.show()
@@ -85,31 +86,71 @@ class Aplicativo:
             self.fixo_carros.set_visible(False)
             self.fixo_home.set_visible(True)
 
+            if self.visitadoCliente:
+                self.limparTreeviewCliente(widget)
+                self.visitadoCliente = False
+
+            if self.visitadoCarros:
+                self.limparTreeviewCarros(widget)
+                self.visitadoCarros = False
+
+            self.vistaHome = True
+
         else:
-            self.limparTreeview(widget)
-            self.visitadoCliente = False
-            self.imgLogo = 'img/logo.jpg'
-            self.logoPrincipal.set_from_file(self.imgLogo)
-            self.logoPrincipal.show()
-            self.fixo_cliente.set_visible(False)
-            self.fixo_botoes.set_visible(False)
-            self.fixo_carros.set_visible(False)
-            self.fixo_home.set_visible(True)
-            self.mensagem.set_text('')
+
+            pass
 
     #Botao Clientes
     def botaoCliente(self,widget):
-        self.fixo_home.set_visible(False)
-        self.fixo_carros.set_visible(False)
-        self.fixo_cliente.set_visible(True)
-        self.fixo_botoes.set_visible(True)
-        self.carregaDadosTreview(widget)
-        self.visitadoCliente = True
-        self.limpaMensagemDados(widget)
+        if self.visitadoCarros:
+            self.limparTreeviewCarros(widget)
+            self.visitadoCarros = False
+
+        if not self.visitadoCliente:
+            self.fixo_home.set_visible(False)
+            self.fixo_carros.set_visible(False)
+            self.fixo_cliente.set_visible(True)
+            self.fixo_botoes.set_visible(True)
+            self.carregaDadosTreviewCliente(widget)
+            self.limpaMensagemDados(widget)
+
+            if self.vistaHome:
+                self.vistaHome = False
+
+            self.visitadoCliente = True
+
+        else:
+            pass
+
+    #Botao Carros
+    def botaoCarros(self,widget):
+
+        if not self.visitadoCarros:
+            if self.visitadoCliente:
+                self.limparTreeviewCliente(widget)
+                self.visitadoCliente = False
+
+            self.fixo_home.set_visible(False)
+            self.fixo_cliente.set_visible(False)
+            self.fixo_carros.set_visible(True)
+            self.fixo_botoes.set_visible(True)
+            self.carregaTreviewCarros(widget)
+            self.limpaDadosCarros(widget)
+            self.mensagem.set_text('')
+
+            if self.vistaHome:
+                self.vistaHome = False
+
+            self.visitadoCarros = True
+
+        else:
+
+            pass
+
+    #################################################
 
     #Cadastro de dados do cliente
     def inserirDados(self,widget):
-
         if self.visitadoCliente:
             if self.textNome.get_text() and self.textApelidio.get_text() \
                 and self.textNumero.get_text() and self.textBairro.get_text() \
@@ -125,62 +166,53 @@ class Aplicativo:
                 self.mensagem.set_text(cliente.inserirDadosCliente())
 
                 self.limpaDadosClientes(widget)
-                self.limparTreeview(widget)
-                self.visitadoCliente =False
-                self.carregaDadosTreview(widget)
+                self.limparTreeviewCliente(widget)
+                self.carregaDadosTreviewCliente(widget)
             else:
                 self.mensagem.set_text('Favor preencher todos os dados')
 
-        elif self.visitadoCarros:
-            if self.textPlaca.get_text() and self.textTipo.get_text() and \
-                self.textFabricante.get_text() and self.textModelo.get_text() and \
-                self.textAno.get_text() and self.textCodCliente.get_text() != '':
+        if self.visitadoCarros:
+            if self.textPlaca.get_text() and self.textTipo.get_text() and self.textFabricante.get_text()\
+                and self.textModelo.get_text() and self.textAno.get_text() and self.textCodCliente.get_text() != '':
 
-                carro = Conexao()
-                carro.placa = self.textPlaca.get_text().upper()
-                carro.tipo = self.textTipo.get_text().upper()
-                carro.fabricante = self.textFabricante.get_text().upper()
-                carro.modelo = self.textModelo.get_text().upper()
-                carro.ano = self.textAno.get_text().upper()
-                carro.codigoCliente = self.textCodCliente.get_text()
+                carros = Conexao()
+                carros.placa = self.textPlaca.get_text().upper()
+                carros.tipo = self.textTipo.get_text().upper()
+                carros.fabricante = self.textFabricante.get_text().upper()
+                carros.modelo = self.textModelo.get_text().upper()
+                carros.ano = self.textAno.get_text()
+                carros.codigoCliente = self.textCodCliente.get_text()
 
-                self.mensagem.set_text(carro.inserirDadosCarros())
+                self.mensagem.set_text(carros.inserirDadosCarros())
 
                 self.limpaDadosCarros(widget)
                 self.limparTreeviewCarros(widget)
-                self.visitadoCarros = False
                 self.carregaTreviewCarros(widget)
             else:
                 self.mensagem.set_text('Favor preencher todos os dados')
 
 
-    # Monta tela localizar do cliente
+
+    # Monta tela localizar do cliente, Carro e manutencao
     def btnLocalizar(self, widget):
-        self.telapesquisa.show()
         if self.visitadoCliente:
             self.mensagemLocalizar.set_text('Digite o código do cliente')
             self.cod.set_text('')
-        elif self.visitadoCarros:
+            self.telapesquisa.show()
+
+        if self.visitadoCarros:
             self.mensagemLocalizar.set_text('Digite o código do carro')
             self.cod.set_text('')
-        else:
-            self.mensagemLocalizar.set_text('Digite o código manutenção')
-            self.cod.set_text('')
+            self.telapesquisa.show()
 
     # Botao localizar da tela pesquisa
     def botaLocalizarPesquisa(self, widget):
         if self.visitadoCliente:
             codigo = self.cod.get_text()
             self.searchDados(codigo, widget=True)
-            self.fecharTelaPesquisa(widget)
+            self.telapesquisa.hide_on_delete()
             if self.textNome.get_text() == '':
                 self.mensagem.set_text('Codigo do cliente não existe')
-        if self.visitadoCarros:
-            self.codigoCarro = self.cod.get_text()
-            self.searchDados(self.codigoCarro, widget=True)
-            self.fecharTelaPesquisa(widget)
-            if self.textPlaca.get_text() == '':
-                self.mensagem.set_text('Codigo do carro não existe')
 
 
 
@@ -205,7 +237,6 @@ class Aplicativo:
             self.textAno.set_text(str(carros.ano))
             self.textCodCliente.set_text(str(carros.codigoCliente))
 
-
     #Editar dados Clientes
     def upadateDados(self,widget):
 
@@ -224,9 +255,8 @@ class Aplicativo:
 
                 self.mensagem.set_text(cliente.atualizarDadosCliente())
                 self.limpaDadosClientes(widget)
-                self.limparTreeview(widget)
-                self.visitadoCliente = False
-                self.carregaDadosTreview(widget)
+                self.limparTreeviewCliente(widget)
+                self.carregaDadosTreviewCliente(widget)
             else:
                 self.mensagem.set_text('Favor localizar o registro para edição')
 
@@ -260,12 +290,10 @@ class Aplicativo:
             if self.cod.get_text() and self.textNome.get_text() != '':
                 cliente = Conexao()
                 codigo = self.cod.get_text()
-                print('Codigo :'+codigo + self.textNome.get_text())
                 self.mensagem.set_text(cliente.deleteDadosCliente(codigo))
                 self.limpaDadosClientes(widget)
-                self.limparTreeview(widget)
-                self.visitadoCliente = False
-                self.carregaDadosTreview(widget)
+                self.limparTreeviewCliente(widget)
+                self.carregaDadosTreviewCliente(widget)
             else:
                 self.mensagem.set_text('Favor localizar o registro antes da exclução')
 
@@ -297,7 +325,7 @@ class Aplicativo:
         self.textCodCliente.set_text('')
 
     #limpada o treeView cliente
-    def limparTreeview(self,widget):
+    def limparTreeviewCliente(self,widget):
         self.treeview.remove_column(self.column_text0)
         self.treeview.remove_column(self.column_text)
         self.treeview.remove_column(self.column_text1)
@@ -315,125 +343,85 @@ class Aplicativo:
         self.treeviewCarros.remove_column(self.column_text4)
         self.treeviewCarros.remove_column(self.column_text5)
 
-
-    def botaoCarros(self,widget):
-        if self.visitadoCliente:
-            self.limparTreeview(widget)
-            self.visitadoCliente = False
-            self.carregaTreviewCarros(widget)
-            self.visitadoCarros = True
-            self.fixo_home.set_visible(False)
-            self.fixo_cliente.set_visible(False)
-            self.fixo_carros.set_visible(True)
-            self.fixo_botoes.set_visible(True)
-            self.mensagem.set_text('')
-
-
-        else:
-            self.visitadoCliente = False
-            self.carregaTreviewCarros(widget)
-            self.visitadoCarros = True
-            self.fixo_home.set_visible(False)
-            self.fixo_cliente.set_visible(False)
-            self.fixo_carros.set_visible(True)
-            self.fixo_botoes.set_visible(True)
-            self.mensagem.set_text('')
-            self.carregaTreviewCarros(widget)
-
-
-
-
-
     #carrega os dados na tela treview
-    def carregaDadosTreview(self,widget):
-        if not self.visitadoCliente:
+    def carregaDadosTreviewCliente(self,widget):
+        cliente = Conexao()
 
-            cliente = Conexao()
+        self.listStore = Gtk.ListStore(int,str,str,str,int,str,str)
+        self.treeview.set_model(self.listStore)
 
-            self.listStore = Gtk.ListStore(int,str,str,str,int,str,str)
-            self.treeview.set_model(self.listStore)
+        renderer_text0 = Gtk.CellRendererText()
+        self.column_text0 = Gtk.TreeViewColumn('Codigo', renderer_text0, text=0)
+        self.treeview.append_column(self.column_text0)
 
-            renderer_text0 = Gtk.CellRendererText()
-            self.column_text0 = Gtk.TreeViewColumn('Codigo', renderer_text0, text=0)
-            self.treeview.append_column(self.column_text0)
+        renderer_text = Gtk.CellRendererText()
+        self.column_text = Gtk.TreeViewColumn('Nome', renderer_text, text=1)
+        self.treeview.append_column(self.column_text)
 
-            renderer_text = Gtk.CellRendererText()
-            self.column_text = Gtk.TreeViewColumn('Nome', renderer_text, text=1)
-            self.treeview.append_column(self.column_text)
+        renderer_text1 = Gtk.CellRendererText()
+        self.column_text1 = Gtk.TreeViewColumn('Apelidio', renderer_text1, text=2)
+        self.treeview.append_column(self.column_text1)
 
-            renderer_text1 = Gtk.CellRendererText()
-            self.column_text1 = Gtk.TreeViewColumn('Apelidio', renderer_text1, text=2)
-            self.treeview.append_column(self.column_text1)
+        renderer_text2 = Gtk.CellRendererText()
+        self.column_text2 = Gtk.TreeViewColumn('End', renderer_text2, text=3)
+        self.treeview.append_column(self.column_text2)
 
-            renderer_text2 = Gtk.CellRendererText()
-            self.column_text2 = Gtk.TreeViewColumn('End', renderer_text2, text=3)
-            self.treeview.append_column(self.column_text2)
+        renderer_text3 = Gtk.CellRendererText()
+        self.column_text3 = Gtk.TreeViewColumn('Numero', renderer_text3, text=4)
+        self.treeview.append_column(self.column_text3)
 
-            renderer_text3 = Gtk.CellRendererText()
-            self.column_text3 = Gtk.TreeViewColumn('Numero', renderer_text3, text=4)
-            self.treeview.append_column(self.column_text3)
+        renderer_text4 = Gtk.CellRendererText()
+        self.column_text4 = Gtk.TreeViewColumn('Bairro', renderer_text4, text=5)
+        self.treeview.append_column(self.column_text4)
 
-            renderer_text4 = Gtk.CellRendererText()
-            self.column_text4 = Gtk.TreeViewColumn('Bairro', renderer_text4, text=5)
-            self.treeview.append_column(self.column_text4)
+        renderer_text5 = Gtk.CellRendererText()
+        self.column_text5 = Gtk.TreeViewColumn('Telefone', renderer_text5, text=6)
+        self.treeview.append_column(self.column_text5)
 
-            renderer_text5 = Gtk.CellRendererText()
-            self.column_text5 = Gtk.TreeViewColumn('Telefone', renderer_text5, text=6)
-            self.treeview.append_column(self.column_text5)
+        cliente.selecionarTudoCliente()
 
-            cliente.selecionarTudoCliente()
+        for linha in cliente.info:
+            self.listStore.append(linha)
 
-            for linha in cliente.info:
-                self.listStore.append(linha)
-
-            self.visitadoCliente = True
-        else:
-            pass
 
     def carregaTreviewCarros(self, widget):
-        if not self.visitadoCarros:
+        carro = Conexao()
 
-            carro = Conexao()
+        self.listStoreCArros = Gtk.ListStore(int, str, str, str, str, int, int)
+        self.treeviewCarros.set_model(self.listStoreCArros)
 
-            self.listStoreCArros = Gtk.ListStore(int, str, str, str, str, int, int)
-            self.treeviewCarros.set_model(self.listStoreCArros)
+        renderer_text0 = Gtk.CellRendererText()
+        self.column_text0 = Gtk.TreeViewColumn('Codigo', renderer_text0, text=0)
+        self.treeviewCarros.append_column(self.column_text0)
 
-            renderer_text0 = Gtk.CellRendererText()
-            self.column_text0 = Gtk.TreeViewColumn('Codigo', renderer_text0, text=0)
-            self.treeviewCarros.append_column(self.column_text0)
+        renderer_text = Gtk.CellRendererText()
+        self.column_text = Gtk.TreeViewColumn('Placa', renderer_text, text=1)
+        self.treeviewCarros.append_column(self.column_text)
 
-            renderer_text = Gtk.CellRendererText()
-            self.column_text = Gtk.TreeViewColumn('Placa', renderer_text, text=1)
-            self.treeviewCarros.append_column(self.column_text)
+        renderer_text1 = Gtk.CellRendererText()
+        self.column_text1 = Gtk.TreeViewColumn('Tipo', renderer_text1, text=2)
+        self.treeviewCarros.append_column(self.column_text1)
 
-            renderer_text1 = Gtk.CellRendererText()
-            self.column_text1 = Gtk.TreeViewColumn('Tipo', renderer_text1, text=2)
-            self.treeviewCarros.append_column(self.column_text1)
+        renderer_text2 = Gtk.CellRendererText()
+        self.column_text2 = Gtk.TreeViewColumn('Fabricante', renderer_text2, text=3)
+        self.treeviewCarros.append_column(self.column_text2)
 
-            renderer_text2 = Gtk.CellRendererText()
-            self.column_text2 = Gtk.TreeViewColumn('Fabricante', renderer_text2, text=3)
-            self.treeviewCarros.append_column(self.column_text2)
+        renderer_text3 = Gtk.CellRendererText()
+        self.column_text3 = Gtk.TreeViewColumn('Modelo', renderer_text3, text=4)
+        self.treeviewCarros.append_column(self.column_text3)
 
-            renderer_text3 = Gtk.CellRendererText()
-            self.column_text3 = Gtk.TreeViewColumn('Modelo', renderer_text3, text=4)
-            self.treeviewCarros.append_column(self.column_text3)
+        renderer_text4 = Gtk.CellRendererText()
+        self.column_text4 = Gtk.TreeViewColumn('Ano', renderer_text4, text=5)
+        self.treeviewCarros.append_column(self.column_text4)
 
-            renderer_text4 = Gtk.CellRendererText()
-            self.column_text4 = Gtk.TreeViewColumn('Ano', renderer_text4, text=5)
-            self.treeviewCarros.append_column(self.column_text4)
+        renderer_text5 = Gtk.CellRendererText()
+        self.column_text5 = Gtk.TreeViewColumn('Cliente', renderer_text5, text=6)
+        self.treeviewCarros.append_column(self.column_text5)
 
-            renderer_text5 = Gtk.CellRendererText()
-            self.column_text5 = Gtk.TreeViewColumn('Cliente', renderer_text5, text=6)
-            self.treeviewCarros.append_column(self.column_text5)
+        carro.selecionaTudoCarros()
 
-            carro.selecionaTudoCarros()
-
-            for linha in carro.info:
-                self.listStoreCArros.append(linha)
-
-            self.visitadoCarros = True
-        else:
-            pass
+        for linha in carro.info:
+            self.listStoreCArros.append(linha)
 
 
     # Fecha a tela de pesquisa

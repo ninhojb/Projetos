@@ -14,3 +14,6 @@ class Home:
         self.logoPrincipal.set_from_file(self.imgLogo)
         self.logoPrincipal.show()
         self.fixo_home.set_visible(True)
+
+    def abrirTelaHome(self, widget):
+        pass
