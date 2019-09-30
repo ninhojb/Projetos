@@ -149,7 +149,7 @@ class Aplicativo:
 
     #################################################
 
-    #Cadastro de dados do cliente
+    #Cadastro de dados do cliente, Carros e manutencao
     def inserirDados(self,widget):
         if self.visitadoCliente:
             if self.textNome.get_text() and self.textApelidio.get_text() \
@@ -191,8 +191,6 @@ class Aplicativo:
             else:
                 self.mensagem.set_text('Favor preencher todos os dados')
 
-
-
     # Monta tela localizar do cliente, Carro e manutencao
     def btnLocalizar(self, widget):
         if self.visitadoCliente:
@@ -214,7 +212,12 @@ class Aplicativo:
             if self.textNome.get_text() == '':
                 self.mensagem.set_text('Codigo do cliente não existe')
 
-
+        if self.visitadoCarros:
+            codigo = self.cod.get_text()
+            self.searchDados(codigo,widget=True)
+            self.telapesquisa.hide_on_delete()
+            if self.textPlaca.get_text() == '':
+                self.mensagem.set_text('Codigo do cliente não existe')
 
     # Pesquisa os dados e alimenta a tela cliente, carros e manutencao
     def searchDados(self, codigo, widget):
@@ -227,7 +230,8 @@ class Aplicativo:
             self.textNumero.set_text(str(cliente.numero))
             self.textBairro.set_text(cliente.bairro)
             self.textTelefone.set_text(cliente.telefone)
-        elif self.visitadoCarros:
+
+        if self.visitadoCarros:
             carros = Conexao()
             self.mensagem.set_text(carros.localizarDadosCarro(codigo))
             self.textPlaca.set_text(carros.placa)
@@ -237,7 +241,7 @@ class Aplicativo:
             self.textAno.set_text(str(carros.ano))
             self.textCodCliente.set_text(str(carros.codigoCliente))
 
-    #Editar dados Clientes
+    #Editar dados Clientes, carros e manutencao
     def upadateDados(self,widget):
 
         if self.visitadoCliente:
@@ -273,18 +277,17 @@ class Aplicativo:
                 carro.modelo = self.textModelo.get_text().upper()
                 carro.ano = self.textAno.get_text().upper()
                 carro.codigoCliente = self.textCodCliente.get_text()
-                carro.codCarros = self.codigoCarro
+                carro.codCarros = self.cod.get_text()
+
                 self.mensagem.set_text(carro.atualizarDadosCarros())
                 self.limpaDadosCarros(widget)
                 self.limparTreeviewCarros(widget)
-                self.visitadoCarros = False
                 self.carregaTreviewCarros(widget)
-                print(carro.codCarros)
 
             else:
                 self.mensagem.set_text('Favor localizar o registro para edição')
 
-    #Excluir regstro de cliente
+    #Excluir regstro de cliente, carros e manutencao
     def deleteDados(self,widget):
         if self.visitadoCliente:
             if self.cod.get_text() and self.textNome.get_text() != '':
@@ -297,6 +300,17 @@ class Aplicativo:
             else:
                 self.mensagem.set_text('Favor localizar o registro antes da exclução')
 
+        if self.visitadoCarros:
+            if self.cod.get_text() and self.textPlaca.get_text() != '':
+                carros = Conexao()
+                codigo = self.cod.get_text()
+                self.mensagem.set_text(carros.deleteDadosCarros(codigo))
+                self.limpaDadosCarros(widget)
+                self.limparTreeviewCarros(widget)
+                self.carregaTreviewCarros(widget)
+            else:
+                self.mensagem.set_text('Favor localizar o registro antes da exclusão')
+
     #Limpa dados do cliente
     def limpaDadosClientes(self,widget):
         self.textNome.set_text('')
@@ -306,15 +320,11 @@ class Aplicativo:
         self.textNumero.set_text('')
         self.textBairro.set_text('')
 
-    #limpa dados e as mensagens
+    #limpa dados e as mensagens cliente, carros e manutencao
     def limpaMensagemDados(self, widget):
-        self.textNome.set_text('')
-        self.textApelidio.set_text('')
-        self.textTelefone.set_text('')
-        self.textEnd.set_text('')
-        self.textNumero.set_text('')
-        self.textBairro.set_text('')
         self.mensagem.set_text('')
+        self.limpaDadosClientes(widget)
+        self.limpaDadosCarros(widget)
 
     def limpaDadosCarros(self,widget):
         self.textPlaca.set_text('')
@@ -334,6 +344,7 @@ class Aplicativo:
         self.treeview.remove_column(self.column_text4)
         self.treeview.remove_column(self.column_text5)
 
+    #Limpa dados Treeview Carros
     def limparTreeviewCarros(self,widget):
         self.treeviewCarros.remove_column(self.column_text0)
         self.treeviewCarros.remove_column(self.column_text)
@@ -343,7 +354,7 @@ class Aplicativo:
         self.treeviewCarros.remove_column(self.column_text4)
         self.treeviewCarros.remove_column(self.column_text5)
 
-    #carrega os dados na tela treview
+    #carrega os dados na tela treview de clientes
     def carregaDadosTreviewCliente(self,widget):
         cliente = Conexao()
 
@@ -383,7 +394,7 @@ class Aplicativo:
         for linha in cliente.info:
             self.listStore.append(linha)
 
-
+    #Carrega os dados do Treevew Carros
     def carregaTreviewCarros(self, widget):
         carro = Conexao()
 
