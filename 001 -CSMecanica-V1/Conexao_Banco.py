@@ -241,6 +241,29 @@ class Conexao(object):
         except:
             return 'Ocorreu um erro ao tentar excluir'
 
+    def comboBoxCarro(self, codigo):
+        self.info = []
+        banco = Banco()
+
+        cursor = banco.conexao.cursor()
+        cursor.execute(
+            '''
+            SELECT 
+                carros.CodCarros, 
+                carros.Modelo
+            FROM carros
+                JOIN cliente
+                    on carros.CodigoCliente = cliente.CodCliente 
+            WHERE  cliente.CodCliente = ?
+            ORDER BY carros.Modelo
+            
+            ''',(codigo,))
+
+        for linha in cursor.fetchall():
+            self.info.append(linha)
+
+        cursor.close()
+
     # cadastro manutençao
     def inserirDadosManutencao(self):
 
@@ -304,3 +327,54 @@ class Conexao(object):
             return 'Dados excluido com sucesso'
         except:
             return 'Ocorreu um erro ao excluir dados'
+
+
+    def selectTodosDados(self,):
+        banco = Banco()
+        self.info = []
+        try:
+            cursor = banco.conexao.cursor()
+            cursor.execute(
+                '''
+                SELECT CodManutencao,
+                    DataEntrada,
+                    DataSaida,
+                    Defeito,
+                    Solucao,
+                    Obs,
+                    Valor,
+                    CodigoCarro,
+                    CodigoCliente
+                FROM manutencao
+                ORDER BY CodManutencao
+                '''
+            )
+
+            for linha in cursor.fetchall():
+                self.info.append(linha)
+
+            cursor.close()
+
+            return 'Pesquisa realizada com sucesso'
+        except:
+            return 'Ocorreu um erro ao realiza pesquisa'
+
+    #############
+
+    def comboBoxCliente(self):
+        self.info = []
+        banco = Banco()
+
+        cursor = banco.conexao.cursor()
+        cursor.execute(
+            '''
+            SELECT CodCliente, Nome
+            FROM cliente
+            ORDER BY CodCliente
+            
+            '''
+        )
+        for linha in cursor.fetchall():
+            self.info.append(linha)
+
+        cursor.close()

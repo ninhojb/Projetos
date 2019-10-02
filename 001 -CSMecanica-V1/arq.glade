@@ -122,6 +122,7 @@
                 <property name="use_underline">True</property>
                 <property name="image_position">top</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="botaoManutencao" swapped="no"/>
               </object>
               <packing>
                 <property name="x">15</property>
@@ -527,7 +528,6 @@
               <object class="GtkFixed" id="fixo_botao">
                 <property name="width_request">810</property>
                 <property name="height_request">100</property>
-                <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkButton" id="btn_cancelar">
@@ -872,7 +872,6 @@
               <object class="GtkFixed" id="fixo_manutencao">
                 <property name="width_request">900</property>
                 <property name="height_request">450</property>
-                <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel">
@@ -912,6 +911,7 @@
                               <object class="GtkTreeView" id="treeView_manu">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="enable_grid_lines">both</property>
                                 <child internal-child="selection">
                                   <object class="GtkTreeSelection"/>
                                 </child>
@@ -959,7 +959,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox">
+                      <object class="GtkComboBox" id="combox_cliente">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -983,7 +983,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox">
+                      <object class="GtkComboBox" id="combox_carro">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -1007,7 +1007,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_saida">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                       </object>
@@ -1031,7 +1031,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_obs">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                       </object>
@@ -1055,7 +1055,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_entrada">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                       </object>
@@ -1079,7 +1079,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry">
+                      <object class="GtkEntry" id="entry_valor">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                       </object>
@@ -1111,7 +1111,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTextView">
+                  <object class="GtkTextView" id="textView_defeito">
                     <property name="width_request">315</property>
                     <property name="height_request">80</property>
                     <property name="visible">True</property>
@@ -1139,7 +1139,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTextView">
+                  <object class="GtkTextView" id="textView_solucao">
                     <property name="width_request">315</property>
                     <property name="height_request">80</property>
                     <property name="visible">True</property>

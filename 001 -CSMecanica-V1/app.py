@@ -70,13 +70,41 @@ class Aplicativo:
         self.textAno = self.builder.get_object('entry_ano')
         self.textCodCliente = self.builder.get_object('entry_cod_cliente')
 
+        #Atribui o gri da tela Manutencao
+        self.fixoManutencao = self.builder.get_object('fixo_manutencao')
+        self.visitadoManutencao = False
+        self.textDataEntrada = self.builder.get_object('entry_entrada')
+        self.textDataSaida = self.builder.get_object('entry_saida')
+        self.defeitoBuffer = self.builder.get_object('textView_defeito')
+        self.textDefeito = self.defeitoBuffer.get_buffer()
+        self.solucaoBuffer = self.builder.get_object('textView_solucao')
+        self.textSolucao = self.solucaoBuffer.get_buffer()
+        self.textObs = self.builder.get_object('entry_obs')
+        self.textValor = self.builder.get_object('entry_valor')
+        self.textComboxCliente = self.builder.get_object('combox_cliente')
+        self.textComboxCarro = self.builder.get_object('combox_carro')
+
         #atribui treeView
         self.treeview = self.builder.get_object('treview_cliente')
         self.treeviewCarros = self.builder.get_object('treeview_carros')
+        self.treeViewManutencao = self.builder.get_object('treeView_manu')
 
     #Botes do lado esquerdo
     #Botao home
     def botaoHome(self, widget):
+        if self.visitadoCliente:
+            self.limparTreeviewCliente(widget)
+            self.visitadoCliente = False
+
+        if self.visitadoCarros:
+            self.limparTreeviewCarros(widget)
+            self.visitadoCarros = False
+
+        if self.visitadoManutencao:
+            self.limparTreeviewManutencao(widget)
+            self.limpaComboxCliente(widget)
+            self.visitadoManutencao = False
+
         if not self.vistaHome:
             self.imgLogo = 'img/logo.jpg'
             self.logoPrincipal.set_from_file(self.imgLogo)
@@ -84,20 +112,10 @@ class Aplicativo:
             self.fixo_cliente.set_visible(False)
             self.fixo_botoes.set_visible(False)
             self.fixo_carros.set_visible(False)
+            self.fixoManutencao.set_visible(False)
             self.fixo_home.set_visible(True)
-
-            if self.visitadoCliente:
-                self.limparTreeviewCliente(widget)
-                self.visitadoCliente = False
-
-            if self.visitadoCarros:
-                self.limparTreeviewCarros(widget)
-                self.visitadoCarros = False
-
             self.vistaHome = True
-
         else:
-
             pass
 
     #Botao Clientes
@@ -106,45 +124,77 @@ class Aplicativo:
             self.limparTreeviewCarros(widget)
             self.visitadoCarros = False
 
+        if self.visitadoManutencao:
+            self.limparTreeviewManutencao(widget)
+            self.limpaComboxCliente(widget)
+            self.visitadoManutencao = False
+
+        if self.vistaHome:
+            self.vistaHome = False
+
         if not self.visitadoCliente:
             self.fixo_home.set_visible(False)
             self.fixo_carros.set_visible(False)
+            self.fixoManutencao.set_visible(False)
             self.fixo_cliente.set_visible(True)
             self.fixo_botoes.set_visible(True)
             self.carregaDadosTreviewCliente(widget)
             self.limpaMensagemDados(widget)
-
-            if self.vistaHome:
-                self.vistaHome = False
-
             self.visitadoCliente = True
-
         else:
             pass
 
     #Botao Carros
     def botaoCarros(self,widget):
+        if self.visitadoCliente:
+            self.limparTreeviewCliente(widget)
+            self.visitadoCliente = False
+
+        if self.visitadoManutencao:
+            self.limparTreeviewManutencao(widget)
+            self.limpaComboxCliente(widget)
+            self.visitadoManutencao = False
+
+        if self.vistaHome:
+            self.vistaHome = False
 
         if not self.visitadoCarros:
-            if self.visitadoCliente:
-                self.limparTreeviewCliente(widget)
-                self.visitadoCliente = False
-
             self.fixo_home.set_visible(False)
             self.fixo_cliente.set_visible(False)
+            self.fixoManutencao.set_visible(False)
             self.fixo_carros.set_visible(True)
             self.fixo_botoes.set_visible(True)
             self.carregaTreviewCarros(widget)
             self.limpaDadosCarros(widget)
             self.mensagem.set_text('')
-
-            if self.vistaHome:
-                self.vistaHome = False
-
             self.visitadoCarros = True
+        else:
+            pass
+
+    def botaoManutencao(self,widget):
+        if self.visitadoCliente:
+            self.limparTreeviewCliente(widget)
+            self.visitadoCliente = False
+
+        if self.visitadoCarros:
+            self.limparTreeviewCarros(widget)
+            self.visitadoCarros = False
+
+        if self.vistaHome:
+            self.vistaHome = False
+
+        if not self.visitadoManutencao:
+            self.fixo_home.set_visible(False)
+            self.fixo_cliente.set_visible(False)
+            self.fixo_carros.set_visible(False)
+            self.fixoManutencao.set_visible(True)
+            self.fixo_botoes.set_visible(True)
+            self.carregaTreviewManutencao(widget)
+            self.mensagem.set_text('')
+            self.comboBoxClienteManu(widget)
+            self.visitadoManutencao = True
 
         else:
-
             pass
 
     #################################################
@@ -188,6 +238,30 @@ class Aplicativo:
                 self.limpaDadosCarros(widget)
                 self.limparTreeviewCarros(widget)
                 self.carregaTreviewCarros(widget)
+            else:
+                self.mensagem.set_text('Favor preencher todos os dados')
+
+        if self.visitadoManutencao:
+            if self.textDataEntrada.get_text() and self.textObs.get_text() and self.textValor.get_text()\
+                and self.cliente_id and self.carro_id != '':
+
+                manutencao = Conexao()
+
+                manutencao.dataEntrada = self.textDataEntrada.get_text()
+                manutencao.dataSaida = self.textDataSaida.get_text()
+                manutencao.defeito = self.textDefeito.get_text(self.textDefeito.get_start_iter(),
+                                                               self.textDefeito.get_end_iter(),False).upper()
+                manutencao.solucao = self.textSolucao.get_text(self.textSolucao.get_start_iter(),
+                                                               self.textSolucao.get_end_iter(),False).upper()
+                manutencao.obs = self.textObs.get_text().upper()
+                manutencao.valor = self.textValor.get_text()
+                manutencao.codigoCarro = self.carro_id
+                manutencao.codigoCliente = self.cliente_id
+
+                self.mensagem.set_text(manutencao.inserirDadosManutencao())
+                self.limparTreeviewManutencao(widget)
+                self.limpaDadosManutencao(widget)
+                self.carregaTreviewManutencao(widget)
             else:
                 self.mensagem.set_text('Favor preencher todos os dados')
 
@@ -325,6 +399,7 @@ class Aplicativo:
         self.mensagem.set_text('')
         self.limpaDadosClientes(widget)
         self.limpaDadosCarros(widget)
+        self.limpaDadosManutencao(widget)
 
     def limpaDadosCarros(self,widget):
         self.textPlaca.set_text('')
@@ -333,6 +408,16 @@ class Aplicativo:
         self.textModelo.set_text('')
         self.textAno.set_text('')
         self.textCodCliente.set_text('')
+
+    def limpaDadosManutencao(self,widget):
+        self.textDataEntrada.set_text('')
+        self.textDataSaida.set_text('')
+        self.textObs.set_text('')
+        self.textValor.set_text('')
+        self.textSolucao.set_text('')
+        self.textDefeito.set_text('')
+        self.textComboxCliente.clear()
+        self.comboBoxClienteManu(widget)
 
     #limpada o treeView cliente
     def limparTreeviewCliente(self,widget):
@@ -353,6 +438,22 @@ class Aplicativo:
         self.treeviewCarros.remove_column(self.column_text3)
         self.treeviewCarros.remove_column(self.column_text4)
         self.treeviewCarros.remove_column(self.column_text5)
+
+    def limparTreeviewManutencao(self, widget):
+        self.treeViewManutencao.remove_column(self.column_text0)
+        self.treeViewManutencao.remove_column(self.column_text)
+        self.treeViewManutencao.remove_column(self.column_text1)
+        self.treeViewManutencao.remove_column(self.column_text2)
+        self.treeViewManutencao.remove_column(self.column_text3)
+        self.treeViewManutencao.remove_column(self.column_text4)
+        self.treeViewManutencao.remove_column(self.column_text5)
+        self.treeViewManutencao.remove_column(self.column_text6)
+        self.treeViewManutencao.remove_column(self.column_text7)
+
+    def limpaComboxCliente(self,widget):
+
+        self.textComboxCliente.clear()
+
 
     #carrega os dados na tela treview de clientes
     def carregaDadosTreviewCliente(self,widget):
@@ -434,6 +535,108 @@ class Aplicativo:
         for linha in carro.info:
             self.listStoreCArros.append(linha)
 
+        # Carrega os dados do Treevew Manutencao
+    def carregaTreviewManutencao(self, widget):
+        manutencao = Conexao()
+
+        self.listStoreanutencao = Gtk.ListStore(int, str, str, str, str, str, float, int,int)
+
+        self.treeViewManutencao.set_model(self.listStoreanutencao)
+
+        renderer_text0 = Gtk.CellRendererText()
+        self.column_text0 = Gtk.TreeViewColumn('Codigo', renderer_text0, text=0)
+        self.treeViewManutencao.append_column(self.column_text0)
+
+        renderer_text = Gtk.CellRendererText()
+        self.column_text = Gtk.TreeViewColumn('Entrada', renderer_text, text=1)
+        self.treeViewManutencao.append_column(self.column_text)
+
+        renderer_text1 = Gtk.CellRendererText()
+        self.column_text1 = Gtk.TreeViewColumn('Saida', renderer_text1, text=2)
+        self.treeViewManutencao.append_column(self.column_text1)
+
+        renderer_text2 = Gtk.CellRendererText()
+        self.column_text2 = Gtk.TreeViewColumn('Defeito', renderer_text2, text=3)
+        self.treeViewManutencao.append_column(self.column_text2)
+
+        renderer_text3 = Gtk.CellRendererText()
+        self.column_text3 = Gtk.TreeViewColumn('Solucao', renderer_text3, text=4)
+        self.treeViewManutencao.append_column(self.column_text3)
+
+        renderer_text4 = Gtk.CellRendererText()
+        self.column_text4 = Gtk.TreeViewColumn('Obs', renderer_text4, text=5)
+        self.treeViewManutencao.append_column(self.column_text4)
+
+        renderer_text5 = Gtk.CellRendererText()
+        self.column_text5 = Gtk.TreeViewColumn('Valor', renderer_text5, text=6)
+        self.treeViewManutencao.append_column(self.column_text5)
+
+        renderer_text6 = Gtk.CellRendererText()
+        self.column_text6 = Gtk.TreeViewColumn('Carro', renderer_text6, text=7)
+        self.treeViewManutencao.append_column(self.column_text6)
+
+        renderer_text7 = Gtk.CellRendererText()
+        self.column_text7 = Gtk.TreeViewColumn('Cliente', renderer_text7, text=8)
+        self.treeViewManutencao.append_column(self.column_text7)
+
+        manutencao.selectTodosDados()
+
+        for linha in manutencao.info:
+            self.listStoreanutencao.append(linha)
+
+    ###############################33333
+    #ComboBox
+
+    def comboBoxClienteManu(self, widget):
+        manutencao = Conexao()
+        self.listStoreComboCliente = Gtk.ListStore(int, str)
+
+        manutencao.comboBoxCliente()
+        for linha in manutencao.info:
+            self.listStoreComboCliente.append(linha)
+
+        self.textComboxCliente.set_model(self.listStoreComboCliente)
+        self.textComboxCliente.connect('changed',self.on_name_combo_changed)
+        renderer_text = Gtk.CellRendererText()
+        self.textComboxCliente.pack_start(renderer_text, True)
+        self.textComboxCliente.add_attribute(renderer_text, "text", 1)
+
+    def on_name_combo_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter is not None:
+            model = combo.get_model()
+            self.cliente_id, name = model[tree_iter][:2]
+            self.textComboxCarro.clear()
+            self.comboBoxCarroManu(self.cliente_id)
+            print("Selected: ID=%d, name=%s" % (self.cliente_id, name))
+        else:
+            entry = combo.get_child()
+            print("Entered: %s" % entry.get_text())
+
+    def comboBoxCarroManu(self, codigo):
+        manutencao = Conexao()
+        self.listStoreComboCarro = Gtk.ListStore(int, str)
+
+        manutencao.comboBoxCarro(codigo)
+        for linha in manutencao.info:
+            self.listStoreComboCarro.append(linha)
+            print(linha)
+
+        self.textComboxCarro.set_model(self.listStoreComboCarro)
+        self.textComboxCarro.connect('changed', self.on_name_combo_changed_carro)
+        renderer_text = Gtk.CellRendererText()
+        self.textComboxCarro.pack_start(renderer_text, True)
+        self.textComboxCarro.add_attribute(renderer_text, "text", 1)
+
+    def on_name_combo_changed_carro(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter is not None:
+            model = combo.get_model()
+            self.carro_id, name = model[tree_iter][:2]
+            print("Selected: ID=%d, name=%s" % (self.carro_id, name))
+        else:
+            entry = combo.get_child()
+            print("Entered: %s" % entry.get_text())
 
     # Fecha a tela de pesquisa
     def fecharTelaPesquisa(self, widget):

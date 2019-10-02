@@ -27,17 +27,17 @@ from Conexao_Banco import Conexao
 # print(carros.inserirDadosCarros())
 
 #inserir dados da Manutenção
-
+#
 # manutencao = Conexao()
 #
-# manutencao.dataEntrada = '30/07/2019'
-# manutencao.dataSaida = '01/08/2019'
-# manutencao.defeito = 'Oleo'
-# manutencao.solucao = 'Troca do oleo'
+# manutencao.dataEntrada = '30/09/2019'
+# manutencao.dataSaida = '01/10/2019'
+# manutencao.defeito = 'Pneus'
+# manutencao.solucao = 'Troca do Pneus'
 # manutencao.obs = 'Pago'
-# manutencao.valor = 100.30
-# manutencao.codigoCarro = 4
-# manutencao.codigoCliente = 4
+# manutencao.valor = 50.30
+# manutencao.codigoCarro = 1
+# manutencao.codigoCliente = 1
 #
 # print(manutencao.inserirDadosManutencao())
 
@@ -78,7 +78,7 @@ from Conexao_Banco import Conexao
 # manutencao.solucao = 'Troca do oleo'
 # manutencao.obs = 'feito em 3 vezez , pago uma'
 # manutencao.valor = 100.30
-# manutencao.codigoCarro = 4
+# manutencao.codigoCarro = 1
 # manutencao.codigoCliente = 4
 # manutencao.codManutencao = 2
 # print(manutencao.atualizarDadosManutencao())
@@ -99,6 +99,12 @@ from Conexao_Banco import Conexao
 # Ecluir registro de manutençao
 # manutencao = Conexao()
 #
-# codManutencao = 1
+# codManutencao = 2
+#
 #
 # print(manutencao.deleteDadosManutencao(codManutencao))
+
+
+manu = Conexao()
+
+manu.comboBoxCarro()
