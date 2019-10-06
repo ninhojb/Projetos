@@ -241,30 +241,9 @@ class Conexao(object):
         except:
             return 'Ocorreu um erro ao tentar excluir'
 
-    def comboBoxCarro(self, codigo):
-        self.info = []
-        banco = Banco()
 
-        cursor = banco.conexao.cursor()
-        cursor.execute(
-            '''
-            SELECT 
-                carros.CodCarros, 
-                carros.Modelo
-            FROM carros
-                JOIN cliente
-                    on carros.CodigoCliente = cliente.CodCliente 
-            WHERE  cliente.CodCliente = ?
-            ORDER BY carros.Modelo
-            
-            ''',(codigo,))
+    ########### Manutencao ##########################
 
-        for linha in cursor.fetchall():
-            self.info.append(linha)
-
-        cursor.close()
-
-    # cadastro manutençao
     def inserirDadosManutencao(self):
 
         banco = Banco()
@@ -285,8 +264,6 @@ class Conexao(object):
         except:
             return 'Ocorreu um erro no cadastro'
 
-    # Atualizar dados da manutençao
-
     def atualizarDadosManutencao(self):
 
         banco = Banco()
@@ -296,7 +273,14 @@ class Conexao(object):
 
             cursor.execute('''
                 UPDATE manutencao SET
-                DataEntrada = ?,DataSaida = ?,Defeito = ?,Solucao = ?,Obs = ?,Valor = ?,CodigoCarro = ?,CodigoCliente = ?
+                    DataEntrada = ?,
+                    DataSaida = ?,
+                    Defeito = ?,
+                    Solucao = ?,
+                    Obs = ?,
+                    Valor = ?,
+                    CodigoCarro = ?,
+                    CodigoCliente = ?
                 WHERE CodManutencao = ?''',
                 (self.dataEntrada,self.dataSaida,self.defeito,self.solucao,self.obs,self.valor,
                  self.codigoCarro,self.codigoCliente,self.codManutencao))
@@ -307,8 +291,6 @@ class Conexao(object):
             return 'Dados atualizados com sucesso'
         except:
             return 'Ocorreu um erro na atualização'
-
-    # Exclui registro de manutenção
 
     def deleteDadosManutencao(self, codManutencao):
 
@@ -328,6 +310,34 @@ class Conexao(object):
         except:
             return 'Ocorreu um erro ao excluir dados'
 
+    def localizaDadosManutencao(self, codigo):
+        banco = Banco()
+
+        try:
+            cursor = banco.conexao.cursor()
+            cursor.execute(
+                '''
+                SELECT 
+                    * 
+                FROM manutencao 
+                WHERE CodManutencao = ?
+                ''',(codigo,))
+
+            for linha in cursor:
+                self.dataEntrada = linha[1]
+                self.dataSaida = linha[2]
+                self.defeito = linha[3]
+                self.solucao = linha[4]
+                self.obs = linha[5]
+                self.valor = linha[6]
+                self.codigoCarro = linha[7]
+                self.codigoCliente = linha[8]
+
+            cursor.close()
+
+            return 'Pesquisa realizada com sucesso'
+        except:
+            return 'Ocorreu um erro na pesquisa'
 
     def selectTodosDados(self,):
         banco = Banco()
@@ -359,8 +369,6 @@ class Conexao(object):
         except:
             return 'Ocorreu um erro ao realiza pesquisa'
 
-    #############
-
     def comboBoxCliente(self):
         self.info = []
         banco = Banco()
@@ -368,7 +376,9 @@ class Conexao(object):
         cursor = banco.conexao.cursor()
         cursor.execute(
             '''
-            SELECT CodCliente, Nome
+            SELECT 
+                CodCliente, 
+                Nome
             FROM cliente
             ORDER BY CodCliente
             
@@ -378,3 +388,43 @@ class Conexao(object):
             self.info.append(linha)
 
         cursor.close()
+
+    def comboBoxCarro(self, codigo):
+        self.info = []
+        banco = Banco()
+
+        cursor = banco.conexao.cursor()
+        cursor.execute(
+            '''
+            SELECT 
+                carros.CodCarros, 
+                carros.Modelo
+            FROM carros
+                JOIN cliente
+                    on carros.CodigoCliente = cliente.CodCliente 
+            WHERE  cliente.CodCliente = ?
+            ORDER BY carros.Modelo
+
+            ''', (codigo,))
+
+        for linha in cursor.fetchall():
+            self.info.append(linha)
+
+        cursor.close()
+
+    def pesquisaNomeCombo(self, codigo):
+        banco = Banco()
+        self.info = []
+        cursor = banco.conexao.cursor()
+
+        cursor.execute(
+            '''
+            SELECT 
+                CodCliente,
+                Nome
+            FROM cliente
+            WHERE CodCliente = ?
+            ''', (codigo,))
+
+        for linha in cursor.fetchall():
+            self.info.append(linha)

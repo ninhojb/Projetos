@@ -277,6 +277,11 @@ class Aplicativo:
             self.cod.set_text('')
             self.telapesquisa.show()
 
+        if self.visitadoManutencao:
+            self.mensagemLocalizar.set_text('Digite o código da manutenção')
+            self.cod.set_text('')
+            self.telapesquisa.show()
+
     # Botao localizar da tela pesquisa
     def botaLocalizarPesquisa(self, widget):
         if self.visitadoCliente:
@@ -291,7 +296,14 @@ class Aplicativo:
             self.searchDados(codigo,widget=True)
             self.telapesquisa.hide_on_delete()
             if self.textPlaca.get_text() == '':
-                self.mensagem.set_text('Codigo do cliente não existe')
+                self.mensagem.set_text('Codigo do carro não existe')
+
+        if self.visitadoManutencao:
+            codigo = self.cod.get_text()
+            self.searchDados(codigo, widget = True)
+            self.telapesquisa.hide_on_delete()
+            if self.textDataEntrada.get_text() == '':
+                self.mensagem.set_text('Codigo da manutenção não existe')
 
     # Pesquisa os dados e alimenta a tela cliente, carros e manutencao
     def searchDados(self, codigo, widget):
@@ -314,6 +326,23 @@ class Aplicativo:
             self.textModelo.set_text(carros.modelo)
             self.textAno.set_text(str(carros.ano))
             self.textCodCliente.set_text(str(carros.codigoCliente))
+
+        if self.visitadoManutencao:
+            manutencao = Conexao()
+            self.limpaComboxCliente(widget)
+            print(manutencao.localizaDadosManutencao(codigo))
+            self.textDataEntrada.set_text(manutencao.dataEntrada)
+            self.textDataSaida.set_text(manutencao.dataSaida)
+            self.textObs.set_text(manutencao.obs)
+            self.textValor.set_text(str(manutencao.valor))
+            self.textDefeito.set_text(manutencao.defeito)
+            self.textSolucao.set_text(manutencao.solucao)
+            self.clienteCombobox = manutencao.codigoCliente
+            self.carroCombobox = manutencao.codigoCarro
+
+            self.alimentaPesquisaCombox( self.clienteCombobox)
+            #print('cliente',self.clienteCombobox,'carro',self.clienteCombobox)
+
 
     #Editar dados Clientes, carros e manutencao
     def upadateDados(self,widget):
@@ -360,6 +389,31 @@ class Aplicativo:
 
             else:
                 self.mensagem.set_text('Favor localizar o registro para edição')
+
+        if self.visitadoManutencao:
+            if self.textDataEntrada and self.carro_id != '':
+                manutencao = Conexao()
+
+                manutencao.dataEntrada = self.textDataEntrada.get_text()
+                manutencao.dataSaida = self.textDataSaida.get_text()
+                manutencao.defeito = self.textDefeito.get_text(self.textDefeito.get_start_iter(),
+                                                               self.textDefeito.get_end_iter(), False).upper()
+                manutencao.solucao = self.textSolucao.get_text(self.textSolucao.get_start_iter(),
+                                                               self.textSolucao.get_end_iter(), False).upper()
+                manutencao.obs = self.textObs.get_text().upper()
+                manutencao.valor = self.textValor.get_text()
+                manutencao.codigoCarro = self.carro_id
+                manutencao.codigoCliente = self.cliente_id
+
+                print(manutencao.atualizarDadosManutencao())
+
+
+                self.limparTreeviewManutencao(widget)
+                self.limpaDadosManutencao(widget)
+                self.carregaTreviewManutencao(widget)
+            else:
+                self.mensagem.set_text('Favor preencher todos os dados')
+
 
     #Excluir regstro de cliente, carros e manutencao
     def deleteDados(self,widget):
@@ -451,7 +505,7 @@ class Aplicativo:
         self.treeViewManutencao.remove_column(self.column_text7)
 
     def limpaComboxCliente(self,widget):
-
+        print('limpa Cliente')
         self.textComboxCliente.clear()
 
 
@@ -584,7 +638,7 @@ class Aplicativo:
         for linha in manutencao.info:
             self.listStoreanutencao.append(linha)
 
-    ###############################33333
+    ###############################
     #ComboBox
 
     def comboBoxClienteManu(self, widget):
@@ -605,10 +659,10 @@ class Aplicativo:
         tree_iter = combo.get_active_iter()
         if tree_iter is not None:
             model = combo.get_model()
-            self.cliente_id, name = model[tree_iter][:2]
+            self.cliente_id, self.name = model[tree_iter][:2]
             self.textComboxCarro.clear()
             self.comboBoxCarroManu(self.cliente_id)
-            print("Selected: ID=%d, name=%s" % (self.cliente_id, name))
+            print("Selected: ID=%d, name=%s" % (self.cliente_id, self.name))
         else:
             entry = combo.get_child()
             print("Entered: %s" % entry.get_text())
@@ -637,6 +691,20 @@ class Aplicativo:
         else:
             entry = combo.get_child()
             print("Entered: %s" % entry.get_text())
+
+    def alimentaPesquisaCombox(self,id_cliente, widget=True):
+        manutencao = Conexao()
+        self.listStoreComboCliente = Gtk.ListStore(int, str)
+
+        manutencao.pesquisaNomeCombo(id_cliente)
+
+        for linha in manutencao.info:
+            self.listStoreComboCliente.append(linha)
+
+        self.textComboxCliente.set_model(self.listStoreComboCliente)
+        renderer_text = Gtk.CellRendererText()
+        self.textComboxCliente.pack_start(renderer_text, True)
+        self.textComboxCliente.add_attribute(renderer_text, "text", 1)
 
     # Fecha a tela de pesquisa
     def fecharTelaPesquisa(self, widget):
