@@ -28,6 +28,13 @@ class Aplicativo:
         self.mensagemLocalizar = self.builder.get_object('label_pesquisa')
         self.cod = self.builder.get_object('entry_codigo_pesquisa')
 
+        #Acesso a tela de confirmação
+        self.telaConfirmacao = self.builder.get_object('id_tela_confirmacao')
+        self.mensagemConfirmacao = self.builder.get_object('mensagem_confirmacao')
+
+        ##tela dialogo
+        self.telaDialogo = self.builder.get_object('id_tela_dialogo')
+
         #atribui as mensagens na tela
         self.mensagem = self.builder.get_object('label_mensagem')
 
@@ -405,15 +412,14 @@ class Aplicativo:
                 manutencao.codigoCarro = self.carro_id
                 manutencao.codigoCliente = self.cliente_id
 
-                print(manutencao.atualizarDadosManutencao())
-
+                codigo = self.cod.get_text()
+                print(manutencao.atualizarDadosManutencao(codigo))
 
                 self.limparTreeviewManutencao(widget)
                 self.limpaDadosManutencao(widget)
                 self.carregaTreviewManutencao(widget)
             else:
                 self.mensagem.set_text('Favor preencher todos os dados')
-
 
     #Excluir regstro de cliente, carros e manutencao
     def deleteDados(self,widget):
@@ -426,7 +432,7 @@ class Aplicativo:
                 self.limparTreeviewCliente(widget)
                 self.carregaDadosTreviewCliente(widget)
             else:
-                self.mensagem.set_text('Favor localizar o registro antes da exclução')
+                self.abrirTelaDialogo(widget)
 
         if self.visitadoCarros:
             if self.cod.get_text() and self.textPlaca.get_text() != '':
@@ -437,7 +443,35 @@ class Aplicativo:
                 self.limparTreeviewCarros(widget)
                 self.carregaTreviewCarros(widget)
             else:
-                self.mensagem.set_text('Favor localizar o registro antes da exclusão')
+                self.abrirTelaDialogo(widget)
+
+        if self.visitadoManutencao:
+            if self.textDataEntrada.get_text() and self.textValor.get_text() != '':
+                manutencao = Conexao()
+                codigo = self.cod.get_text()
+                print(manutencao.deleteDadosManutencao(codigo))
+
+                self.limparTreeviewManutencao(widget)
+                self.limpaDadosManutencao(widget)
+                self.carregaTreviewManutencao(widget)
+            else:
+                self.abrirTelaDialogo(widget)
+
+    def abriTelaConfirmacao(self,widget):
+
+        pass
+
+
+    def abrirTelaDialogo(self,widget):
+        dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO,
+                                   Gtk.ButtonsType.OK, "Aviso!")
+        dialog.format_secondary_text(
+            "Favor localizar o registro antes.")
+        dialog.run()
+        print("INFO dialog closed")
+
+        dialog.destroy()
+
 
     #Limpa dados do cliente
     def limpaDadosClientes(self,widget):
@@ -709,6 +743,9 @@ class Aplicativo:
     # Fecha a tela de pesquisa
     def fecharTelaPesquisa(self, widget):
         self.telapesquisa.hide_on_delete()
+
+    def fecharTelaConfirmacao(self,widget):
+        self.telaDialogo.destroy()
 
     # Fecha o programa
     def sairTelaPrincipal(self, widget):

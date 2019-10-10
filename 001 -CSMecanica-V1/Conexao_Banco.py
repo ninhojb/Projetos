@@ -167,7 +167,12 @@ class Conexao(object):
 
             cursor.execute('''
                 UPDATE carros SET
-                Placa = ?,Tipo = ?, Fabricante = ?,Modelo = ?,Ano = ?,CodigoCliente = ?
+                    Placa = ?,
+                    Tipo = ?, 
+                    Fabricante = ?,
+                    Modelo = ?,
+                    Ano = ?,
+                    CodigoCliente = ?
                 WHERE CodCarros = ?''',
                 (self.placa,self.tipo,self.fabricante,self.modelo,self.ano,self.codigoCliente,self.codCarros))
 
@@ -252,7 +257,15 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
 
             cursor.execute('''
-                INSERT INTO manutencao(DataEntrada,DataSaida,Defeito,Solucao,Obs,Valor,CodigoCarro,CodigoCliente)
+                INSERT INTO manutencao(
+                    DataEntrada,
+                    DataSaida,
+                    Defeito,
+                    Solucao,
+                    Obs,
+                    Valor,
+                    CodigoCarro,
+                    CodigoCliente)
                 VALUES(?,?,?,?,?,?,?,?)''',
                 (self.dataEntrada,self.dataSaida,self.defeito,self.solucao,self.obs,
                  self.valor,self.codigoCarro,self.codigoCliente))
@@ -264,7 +277,7 @@ class Conexao(object):
         except:
             return 'Ocorreu um erro no cadastro'
 
-    def atualizarDadosManutencao(self):
+    def atualizarDadosManutencao(self,cod):
 
         banco = Banco()
 
@@ -283,7 +296,7 @@ class Conexao(object):
                     CodigoCliente = ?
                 WHERE CodManutencao = ?''',
                 (self.dataEntrada,self.dataSaida,self.defeito,self.solucao,self.obs,self.valor,
-                 self.codigoCarro,self.codigoCliente,self.codManutencao))
+                 self.codigoCarro,self.codigoCliente,cod))
 
             banco.conexao.commit()
             cursor.close()
@@ -300,7 +313,9 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
 
             cursor.execute('''
-                DELETE FROM manutencao WHERE CodManutencao = ?
+                DELETE 
+                FROM manutencao 
+                WHERE CodManutencao = ?
             ''',(codManutencao,))
 
             banco.conexao.commit()
