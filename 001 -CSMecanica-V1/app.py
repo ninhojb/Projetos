@@ -37,6 +37,8 @@ class Aplicativo:
 
         #atribui as mensagens na tela
         self.mensagem = self.builder.get_object('label_mensagem')
+        self.mensagemAviso = "Favor localizar o registro antes."
+        self.mensagemAviso1 = 'Favor preencher todos os dados'
 
         # atribui o grid fixo home e logo
         self.logoPrincipal = self.builder.get_object('img_logo')
@@ -203,7 +205,6 @@ class Aplicativo:
 
         else:
             pass
-
     #################################################
 
     #Cadastro de dados do cliente, Carros e manutencao
@@ -226,7 +227,7 @@ class Aplicativo:
                 self.limparTreeviewCliente(widget)
                 self.carregaDadosTreviewCliente(widget)
             else:
-                self.mensagem.set_text('Favor preencher todos os dados')
+                self.abrirTelaDialogo(widget,self.mensagemAviso1)
 
         if self.visitadoCarros:
             if self.textPlaca.get_text() and self.textTipo.get_text() and self.textFabricante.get_text()\
@@ -246,7 +247,7 @@ class Aplicativo:
                 self.limparTreeviewCarros(widget)
                 self.carregaTreviewCarros(widget)
             else:
-                self.mensagem.set_text('Favor preencher todos os dados')
+                self.abrirTelaDialogo(widget,self.mensagemAviso1)
 
         if self.visitadoManutencao:
             if self.textDataEntrada.get_text() and self.textObs.get_text() and self.textValor.get_text()\
@@ -372,7 +373,7 @@ class Aplicativo:
                 self.limparTreeviewCliente(widget)
                 self.carregaDadosTreviewCliente(widget)
             else:
-                self.mensagem.set_text('Favor localizar o registro para edição')
+                self.abrirTelaDialogo(widget,self.mensagemAviso)
 
         if self.visitadoCarros:
 
@@ -395,7 +396,7 @@ class Aplicativo:
                 self.carregaTreviewCarros(widget)
 
             else:
-                self.mensagem.set_text('Favor localizar o registro para edição')
+                self.abrirTelaDialogo(widget,self.mensagemAviso)
 
         if self.visitadoManutencao:
             if self.textDataEntrada and self.carro_id != '':
@@ -419,7 +420,7 @@ class Aplicativo:
                 self.limpaDadosManutencao(widget)
                 self.carregaTreviewManutencao(widget)
             else:
-                self.mensagem.set_text('Favor preencher todos os dados')
+                self.abrirTelaDialogo(widget,self.mensagemAviso)
 
     #Excluir regstro de cliente, carros e manutencao
     def deleteDados(self,widget):
@@ -432,7 +433,7 @@ class Aplicativo:
                 self.limparTreeviewCliente(widget)
                 self.carregaDadosTreviewCliente(widget)
             else:
-                self.abrirTelaDialogo(widget)
+                self.abrirTelaDialogo(widget,self.mensagemAviso)
 
         if self.visitadoCarros:
             if self.cod.get_text() and self.textPlaca.get_text() != '':
@@ -443,7 +444,7 @@ class Aplicativo:
                 self.limparTreeviewCarros(widget)
                 self.carregaTreviewCarros(widget)
             else:
-                self.abrirTelaDialogo(widget)
+                self.abrirTelaDialogo(widget,self.mensagemAviso)
 
         if self.visitadoManutencao:
             if self.textDataEntrada.get_text() and self.textValor.get_text() != '':
@@ -455,23 +456,16 @@ class Aplicativo:
                 self.limpaDadosManutencao(widget)
                 self.carregaTreviewManutencao(widget)
             else:
-                self.abrirTelaDialogo(widget)
+                self.abrirTelaDialogo(widget,self.mensagemAviso)
 
-    def abriTelaConfirmacao(self,widget):
-
-        pass
-
-
-    def abrirTelaDialogo(self,widget):
+    def abrirTelaDialogo(self,widget,msn):
         dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO,
                                    Gtk.ButtonsType.OK, "Aviso!")
-        dialog.format_secondary_text(
-            "Favor localizar o registro antes.")
+        dialog.format_secondary_text(msn)
         dialog.run()
         print("INFO dialog closed")
 
         dialog.destroy()
-
 
     #Limpa dados do cliente
     def limpaDadosClientes(self,widget):

@@ -47,7 +47,14 @@ class Conexao(object):
         try:
             cursor = banco.conexao.cursor()
             cursor.execute('''
-                INSERT INTO cliente(Nome,Apelidio,Logadouro,Numero,Bairro,Telefone)
+                INSERT INTO cliente(
+                    Nome,
+                    Apelidio,
+                    Logadouro,
+                    Numero,
+                    Bairro,
+                    Telefone
+                )
                 VALUES (?,?,?,?,?,?)''',
                 (self.nome,self.apelidio,self.logadouro,self.numero,self.bairro,self.telefone))
 
@@ -65,7 +72,12 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
             cursor.execute('''
                 UPDATE cliente SET
-                Nome = ?,Apelidio = ?,Logadouro = ?,Numero = ?,Bairro = ?,Telefone = ?
+                    Nome = ?,
+                    Apelidio = ?,
+                    Logadouro = ?,
+                    Numero = ?,
+                    Bairro = ?,
+                    Telefone = ?
                 WHERE CodCliente = ?''',
                 (self.nome,self.apelidio,self.logadouro,self.numero,self.bairro,self.telefone,self.codCliente))
             banco.conexao.commit()
@@ -84,7 +96,9 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
 
             cursor.execute('''
-                DELETE FROM cliente WHERE CodCliente = ?''',
+                DELETE 
+                    FROM cliente 
+                WHERE CodCliente = ?''',
                 (codCliente,))
 
             banco.conexao.commit()
@@ -101,7 +115,14 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
             cursor.execute(
                 '''
-                SELECT CodCliente,Nome,Apelidio,Logadouro,Numero,Bairro,Telefone
+                SELECT 
+                    CodCliente,
+                    Nome,
+                    Apelidio,
+                    Logadouro,
+                    Numero,
+                    Bairro,
+                    Telefone
                 FROM cliente
                 ORDER BY CodCliente
                 '''
@@ -123,7 +144,10 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
 
             cursor.execute('''
-                SELECT * FROM cliente WHERE CodCliente = ?
+                SELECT 
+                    * 
+                FROM cliente 
+                WHERE CodCliente = ?
                  ''', (codigo,))
             for linha in cursor:
                 self.nome = linha[1]
@@ -148,7 +172,13 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
 
             cursor.execute('''
-                INSERT INTO carros(Placa,Tipo,Fabricante,Modelo,Ano,CodigoCliente)
+                INSERT INTO carros(
+                    Placa,
+                    Tipo,
+                    Fabricante,
+                    Modelo,
+                    Ano,
+                    CodigoCliente)
                 VALUES(?,?,?,?,?,?)''',
                 (self.placa,self.tipo,self.fabricante,self.modelo,self.ano,self.codigoCliente))
             banco.conexao.commit()
@@ -191,7 +221,14 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
             cursor.execute(
                 '''
-                SELECT CodCarros,Placa,Tipo,Fabricante,Modelo,Ano,CodigoCliente
+                SELECT 
+                    CodCarros,
+                    Placa,
+                    Tipo,
+                    Fabricante,
+                    Modelo,
+                    Ano,
+                    CodigoCliente
                 FROM carros
                 ORDER BY CodCarros
                 '''
@@ -212,7 +249,10 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
 
             cursor.execute('''
-                SELECT * FROM carros WHERE CodCarros = ?
+                SELECT 
+                    * 
+                FROM carros 
+                WHERE CodCarros = ?
                  ''', (codigo,))
             for linha in cursor:
                 self.placa = linha[1]
@@ -236,7 +276,9 @@ class Conexao(object):
             cursor = banco.conexao.cursor()
 
             cursor.execute('''
-                DELETE FROM carros WHERE codCarros = ?
+                DELETE 
+                FROM carros 
+                WHERE codCarros = ?
             ''',(codCarros,))
 
             banco.conexao.commit()
