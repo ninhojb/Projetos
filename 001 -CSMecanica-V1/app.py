@@ -575,7 +575,7 @@ class Aplicativo:
         cliente.selecionarTudoCliente()
 
         for linha in cliente.info:
-            self.listStore.append(linha)
+            print(self.listStore.append(linha))
 
     #Carrega os dados do Treevew Carros
     def carregaTreviewCarros(self, widget):
