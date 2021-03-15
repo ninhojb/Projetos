@@ -103,8 +103,8 @@ from Conexao_Banco import Conexao
 #
 #
 # print(manutencao.deleteDadosManutencao(codManutencao))
-
-
-manu = Conexao()
-
-manu.comboBoxCarro()
+#
+#
+# manu = Conexao()
+#
+# manu.comboBoxCarro()
